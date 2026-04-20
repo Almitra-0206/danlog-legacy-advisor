@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DanLun Logic — Legacy Modernization Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{--g:#FFCD00;--dark:#050505;--card:#0D1520;--border:#1A2A3A;--blue:#0F62FE;--t1:#F0F0F0;--t2:#9A9A9A;--t3:#6B6B6B;--red:#F87171;--lblue:#60A5FA;--purple:#A78BFA;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--dark);color:var(--t1);font-family:'Noto Sans JP','Space Grotesk',sans-serif;min-height:100vh;background-image:radial-gradient(circle at 10% 20%,rgba(15,98,254,.07) 0%,transparent 40%),radial-gradient(circle at 90% 80%,rgba(255,205,0,.04) 0%,transparent 40%);}
+header{border-bottom:1px solid var(--border);padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(5,5,5,.97);backdrop-filter:blur(12px);z-index:100;}
+.logo-t{font-size:15px;font-weight:700;color:var(--t1);font-family:'Space Grotesk',sans-serif;}
+.logo-t span{color:var(--g);}
+.logo-s{font-size:10px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;}
+.hbadge{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);border:1px solid rgba(255,205,0,.3);padding:4px 10px;border-radius:2px;font-family:'Space Grotesk',sans-serif;}
+main{max-width:1280px;margin:0 auto;padding:48px;}
+.hero{margin-bottom:44px;}
+.hero-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--g);margin-bottom:14px;font-family:'Space Grotesk',sans-serif;}
+.hero-title{font-size:clamp(26px,3.5vw,48px);font-weight:300;line-height:1.1;color:var(--t1);letter-spacing:-1px;font-family:'Space Grotesk',sans-serif;margin-bottom:4px;}
+.hero-title strong{font-weight:700;color:var(--g);}
+.hero-sub{font-size:14px;color:var(--t3);margin-top:10px;line-height:1.6;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;align-items:stretch;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-bottom:24px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:26px;position:relative;overflow:hidden;}
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.card-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);font-family:'Space Grotesk',sans-serif;}
+.card-num{font-size:10px;color:rgba(255,205,0,.5);font-family:'Space Grotesk',sans-serif;letter-spacing:1px;}
+.fl{font-size:13px;color:var(--t2);margin-bottom:10px;display:block;}
+.fl-jp{font-size:11px;color:var(--t3);margin-left:6px;font-family:'Noto Sans JP',sans-serif;}
+select{width:100%;background:#0A1220;border:1px solid var(--border);border-radius:2px;color:var(--t1);padding:10px 14px;font-size:13px;font-family:'Noto Sans JP','Space Grotesk',sans-serif;appearance:none;cursor:pointer;outline:none;}
+.fg{margin-bottom:20px;}
+.ib{background:rgba(255,205,0,.03);border-left:2px solid var(--g);padding:13px 17px;font-size:13px;color:var(--t2);line-height:1.6;margin-top:16px;}
+.tag{display:inline-block;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border:1px solid var(--border);border-radius:2px;color:var(--t3);margin:3px 3px 0 0;font-family:'Space Grotesk',sans-serif;}
+.trow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #141E2A;}
+.trow:last-of-type{border-bottom:none;}
+.tlbl{font-size:13px;color:var(--t2);line-height:1.4;}
+.tlbl-jp{display:block;font-size:11px;color:var(--t3);margin-top:2px;font-family:'Noto Sans JP',sans-serif;}
+.t3g{display:flex;gap:1px;flex-shrink:0;margin-left:14px;}
+.t3b{padding:4px 9px;font-size:10px;font-family:'Space Grotesk',sans-serif;cursor:pointer;border:1px solid var(--border);background:#0A1220;color:var(--t3);transition:all .15s;line-height:1;user-select:none;}
+.t3b:first-child{border-radius:2px 0 0 2px;}
+.t3b:last-child{border-radius:0 2px 2px 0;border-style:dashed;}
+.t3b.no{background:rgba(100,100,100,.1);border-color:#2A3A4A;color:var(--t2);}
+.t3b.yes{background:rgba(255,205,0,.12);border-color:var(--g);color:var(--g);}
+.t3b.unk{background:rgba(120,120,120,.08);border-color:#444;color:#666;border-style:dashed;}
+input[type=range]{width:100%;height:4px;border:none;border-radius:2px;cursor:pointer;appearance:none;outline:none;background:linear-gradient(to right,var(--g) var(--sv,50%),var(--border) var(--sv,50%));}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--g);border:2px solid var(--dark);cursor:pointer;box-shadow:0 0 6px rgba(255,205,0,.4);}
+.rlabels{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--t3);font-family:'Space Grotesk',sans-serif;}
+.dbox{margin-top:12px;background:#060D18;border:1px solid var(--border);border-left:2px solid #2A3A50;border-radius:3px;padding:13px 15px;}
+.dtit{font-size:11px;font-weight:600;color:#556;letter-spacing:.5px;margin-bottom:8px;font-family:'Space Grotesk',sans-serif;}
+.dbody{font-size:12px;color:var(--t3);line-height:1.7;margin-bottom:10px;}
+.dimp{font-size:12px;color:var(--t2);line-height:1.65;padding:9px 11px;background:rgba(255,205,0,.04);border-left:2px solid rgba(255,205,0,.25);margin-bottom:8px;}
+.dlab{display:block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'Space Grotesk',sans-serif;margin-bottom:5px;}
+.dhint{font-size:11px;color:#445;font-family:'Space Grotesk',sans-serif;font-style:italic;}
+.rgroup{display:flex;gap:8px;flex-wrap:wrap;}
+.rbtn{flex:1;min-width:60px;padding:8px 10px;background:#0A1220;border:1px solid var(--border);border-radius:2px;color:var(--t3);font-size:12px;cursor:pointer;text-align:center;transition:all .15s;font-family:'Space Grotesk',sans-serif;user-select:none;}
+.rbtn.on{background:rgba(255,205,0,.1);border-color:var(--g);color:var(--g);}
+.rbtn.uopt{border-style:dashed;}
+.rbtn.uopt.on{background:rgba(100,100,100,.1);border-color:#555;color:#888;border-style:dashed;}
+.mfg{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:6px;}
+.mfc{padding:11px 9px;background:#080E18;border:1px solid var(--border);border-radius:3px;cursor:pointer;transition:all .15s;}
+.mfc.sel{border-color:var(--ac,var(--g));background:rgba(var(--acr,255,205,0),.08);}
+.mfv{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);font-family:'Space Grotesk',sans-serif;margin-bottom:3px;}
+.mfn{font-size:11px;font-weight:600;color:var(--t1);font-family:'Space Grotesk',sans-serif;line-height:1.3;}
+.mfjp{font-size:10px;color:var(--t3);font-family:'Noto Sans JP',sans-serif;margin-top:2px;}
+.mfs{font-size:9px;letter-spacing:.8px;text-transform:uppercase;margin-top:7px;padding:2px 6px;border-radius:2px;display:inline-block;font-family:'Space Grotesk',sans-serif;font-weight:600;}
+.sf{background:rgba(255,205,0,.12);color:var(--g);}
+.sp{background:rgba(251,191,36,.12);color:#FBBF24;}
+.sl{background:rgba(248,113,113,.12);color:#F87171;}
+.su{background:rgba(120,120,120,.12);color:#888;}
+.abtn{width:100%;padding:16px;background:var(--g);color:var(--dark);border:none;border-radius:2px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Space Grotesk',sans-serif;margin-top:8px;box-shadow:0 0 20px rgba(255,205,0,.15);transition:all .2s;}
+.abtn:hover{background:#FFE033;box-shadow:0 8px 32px rgba(255,205,0,.35);}
+.divider{height:1px;background:var(--border);margin:34px 0;}
+.sec-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:20px;font-family:'Space Grotesk',sans-serif;}
+#results{display:none;}
+.ss{border-radius:4px;padding:16px 20px;margin-bottom:22px;border:1px solid;}
+.ss.full{background:rgba(255,205,0,.04);border-color:rgba(255,205,0,.25);}
+.ss.partial{background:rgba(251,191,36,.04);border-color:rgba(251,191,36,.22);}
+.ss.limited{background:rgba(248,113,113,.04);border-color:rgba(248,113,113,.22);}
+.ss.unknown{background:rgba(100,100,100,.03);border-color:rgba(100,100,100,.18);border-style:dashed;}
+.cp{display:inline-block;font-size:10px;padding:3px 9px;border-radius:12px;margin:3px 3px 0 0;font-family:'Space Grotesk',sans-serif;font-weight:500;}
+.rc{border:1px solid;border-radius:4px;padding:26px;margin-bottom:22px;position:relative;overflow:hidden;}
+.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--rc-accent,var(--g));opacity:.8;}
+.rec-api{background:rgba(255,205,0,.04);border-color:rgba(255,205,0,.4);}
+.rec-refactor{background:rgba(59,130,246,.05);border-color:rgba(59,130,246,.4);}
+.rec-rebuild{background:rgba(239,68,68,.05);border-color:rgba(239,68,68,.4);}
+.rbadge{font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;font-family:'Space Grotesk',sans-serif;font-weight:600;display:inline-block;margin-bottom:10px;}
+.badge-api{background:rgba(255,205,0,.15);color:var(--g);}
+.badge-refactor{background:rgba(59,130,246,.15);color:#60A5FA;}
+.badge-rebuild{background:rgba(239,68,68,.15);color:#F87171;}
+.rtit{font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-.5px;font-family:'Space Grotesk',sans-serif;margin:0 0 3px;}
+.rtj{font-size:13px;color:var(--t3);font-family:'Noto Sans JP',sans-serif;}
+.conf-n{font-size:44px;font-weight:700;color:var(--g);font-family:'Space Grotesk',sans-serif;line-height:1;}
+.conf-l{font-size:10px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;margin-top:4px;}
+.mrow{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;}
+.mi{flex:1;min-width:100px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:4px;padding:13px;}
+.mv{font-size:18px;font-weight:700;color:var(--g);font-family:'Space Grotesk',sans-serif;}
+.mk{font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-top:4px;font-family:'Space Grotesk',sans-serif;}
+.hybrid-card{background:rgba(15,98,254,.06);border:1px solid rgba(15,98,254,.35);border-radius:4px;padding:26px;margin-bottom:22px;position:relative;overflow:hidden;}
+.hybrid-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--g);opacity:.7;}
+.hbadge2{font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;font-family:'Space Grotesk',sans-serif;font-weight:600;background:rgba(15,98,254,.18);color:#60A5FA;display:inline-block;margin-bottom:12px;}
+.phase-box{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:3px;padding:14px 16px;margin-bottom:10px;}
+.phase-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#60A5FA;font-family:'Space Grotesk',sans-serif;margin-bottom:6px;}
+.why-box{background:rgba(255,205,0,.04);border-left:2px solid rgba(255,205,0,.35);padding:12px 16px;margin-top:14px;}
+.why-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--g);font-family:'Space Grotesk',sans-serif;display:block;margin-bottom:6px;}
+.bar-row{margin-bottom:13px;}
+.bar-lr{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;}
+.bar-track{height:4px;background:#1A2A3A;border-radius:2px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:2px;}
+.wbox{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.22);border-radius:4px;padding:14px 17px;font-size:13px;color:#FCD34D;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;}
+.debt-cards{display:flex;gap:12px;margin-bottom:0;flex-wrap:wrap;}
+.debt-card{flex:1 1 180px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:3px;padding:12px 14px;}
+.debt-card-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.debt-line{width:20px;height:2px;border-radius:1px;}
+.debt-name{font-size:11px;font-weight:600;font-family:'Space Grotesk',sans-serif;}
+.cfo-box{background:rgba(255,205,0,.04);border-left:2px solid rgba(255,205,0,.3);padding:12px 16px;margin-top:16px;}
+.cfo-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'Space Grotesk',sans-serif;display:block;margin-bottom:5px;}
+.poc-table{border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:16px;}
+.poc-hdr{display:grid;grid-template-columns:120px 1fr 1fr;background:#060D18;border-bottom:1px solid var(--border);}
+.poc-hdr div{padding:10px 14px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);font-family:'Space Grotesk',sans-serif;}
+.poc-row{display:grid;grid-template-columns:120px 1fr 1fr;border-bottom:1px solid #0F1A28;}
+.poc-row:last-child{border-bottom:none;}
+.poc-cell{padding:14px;font-size:12px;color:var(--t2);line-height:1.6;border-right:1px solid #0F1A28;}
+.poc-cell:last-child{border-right:none;}
+.poc-mo{font-size:11px;font-weight:700;color:var(--g);font-family:'Space Grotesk',sans-serif;}
+.poc-ul{list-style:none;padding:0;}
+.poc-ul li{padding:2px 0 2px 12px;position:relative;font-size:12px;color:var(--t2);line-height:1.55;}
+.poc-ul li::before{content:"-";position:absolute;left:0;color:#2A3A50;}
+.poc-del{font-size:11px;color:var(--g);margin-top:6px;padding:5px 8px;background:rgba(255,205,0,.05);border-radius:2px;border-left:2px solid rgba(255,205,0,.3);}
+.poc-info{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;}
+.poc-info-card{flex:1;min-width:180px;background:#060D18;border:1px solid var(--border);border-radius:4px;padding:14px 16px;}
+.poc-info-key{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);font-family:'Space Grotesk',sans-serif;margin-bottom:6px;}
+.poc-info-val{font-size:12px;color:var(--t1);line-height:1.6;font-family:'Space Grotesk',sans-serif;}
+footer{border-top:1px solid var(--border);padding:20px 48px;display:flex;align-items:center;justify-content:space-between;margin-top:64px;}
+.fn{font-size:11px;color:var(--t3);font-family:'Space Grotesk',sans-serif;}
+@keyframes fadein{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadein .4s ease both;}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr;}main{padding:22px;}header{padding:0 22px;}.mfg{grid-template-columns:repeat(2,1fr);}.mrow{flex-direction:column;}.poc-hdr,.poc-row{grid-template-columns:80px 1fr;}.poc-cell:last-child,.poc-hdr div:last-child{display:none;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div>
+      <div class="logo-t">DanLun <span>Logic</span></div>
+      <div class="logo-s">Legacy Modernization Intelligence</div>
+    </div>
+  </div>
+  <span class="hbadge">Strategic Advisory · By Silynn Lee</span>
+</header>
+
+<main>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-label">Modernization Intelligence · Japan Market</div>
+  <h1 class="hero-title">脱レガシー<br><strong>Legacy</strong> Modernization Advisor</h1>
+  <p class="hero-sub">日本企業の旧システム資産活用に特化 · API Enablementを基軸とした移行路線図診断ツール</p>
+</div>
+
+<!-- Row 1 -->
+<div class="g2">
+
+  <!-- Card 01 Industry -->
+  <div class="card">
+    <div class="card-top"><span class="card-title">Industry Context / 業種</span><span class="card-num">01</span></div>
+    <div class="fg">
+      <label class="fl">業種を選択 <span class="fl-jp">Industry</span></label>
+      <select id="sel-industry" onchange="onIndustryChange()">
+        <option value="banking">金融 / Banking</option>
+        <option value="manufacturing">製造 / Manufacturing</option>
+        <option value="insurance">保険 / Insurance</option>
+        <option value="retail">小売 / Retail</option>
+      </select>
+    </div>
+    <div class="ib" id="ind-info"></div>
+  </div>
+
+  <!-- Card 02 Mainframe -->
+  <div class="card">
+    <div class="card-top"><span class="card-title">Mainframe Platform / メインフレーム</span><span class="card-num">02</span></div>
+    <label class="fl" style="margin-bottom:12px;">稼働中のメインフレームを選択 <span class="fl-jp">Select legacy platform</span></label>
+    <div class="mfg" id="mf-grid"></div>
+    <div id="mf-detail" style="margin-top:14px;padding:13px 15px;border-radius:3px;border:1px solid;"></div>
+  </div>
+</div>
+
+<!-- Card 03 Code Complexity -->
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-top"><span class="card-title">Code Complexity &amp; Talent Risk / コード複雑度</span><span class="card-num">03</span></div>
+  <div class="g2" style="margin-bottom:0;">
+    <div>
+      <div class="fg">
+        <label class="fl">ロジックのネスト深度 <span class="fl-jp">Logic Nesting Depth</span></label>
+        <input type="range" id="sl-depth" min="1" max="10" value="6" oninput="updateSlider(this,'lbl-depth',10)">
+        <div class="rlabels"><span>1層</span><span id="lbl-depth" style="color:var(--g);font-weight:600;">6層</span><span>10層</span></div>
+        <div class="dbox">
+          <div class="dtit">これは何を聞いていますか？</div>
+          <div class="dbody">COBOLプログラム内でのPGM CALL連鎖の深さです。例：PGM-A が PGM-B を呼び出し、PGM-B が PGM-C を呼び出す場合は3層。層が深いほど安全にリファクタリングすることが難しくなります。</div>
+          <div class="dimp"><span class="dlab">診断への影響 / Impact on Assessment</span>5層超ではAPI Enablementが推奨パスになります。既存システムを稼働させたままAPIとして切り出すことで安全に移行できます。</div>
+          <div class="dhint">わからない場合はデフォルト値（6）のまま診断できます。</div>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:0;">
+        <label class="fl">インターフェース数（他部門連携）<span class="fl-jp">Cross-dept Interfaces</span></label>
+        <input type="range" id="sl-ifaces" min="0" max="30" value="8" oninput="updateSlider(this,'lbl-ifaces',30)">
+        <div class="rlabels"><span>0本</span><span id="lbl-ifaces" style="color:var(--g);font-weight:600;">8本</span><span>30本</span></div>
+        <div class="dbox">
+          <div class="dtit">これは何を聞いていますか？</div>
+          <div class="dbody">このシステムが他部門・他システムとリアルタイムで連携しているデータ接続の本数です。</div>
+          <div class="dimp"><span class="dlab">診断への影響</span>10本超ではAPI Enablementが強く推奨されます。</div>
+          <div class="dhint">わからない場合はデフォルト値（8）のまま診断できます。</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div id="toggles"></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--t3);font-family:'Space Grotesk',sans-serif;">「?」= 不明のままでも診断可能 · 保守的なデフォルト値を使用します</div>
+    </div>
+  </div>
+</div>
+
+<!-- Row 3 -->
+<div class="g3" id="row3"></div>
+
+<button class="abtn" onclick="runAssessment()">＞ 診断を実行する · Run Assessment</button>
+
+<!-- Results -->
+<div id="results">
+  <div class="divider"></div>
+  <div class="sec-title">Assessment Output · 診断結果</div>
+  <div id="unk-notice"></div>
+  <div id="platform-strip"></div>
+  <div id="rec-card"></div>
+  <div id="hybrid-section"></div>
+  <div class="g2" style="align-items:start;">
+    <div class="card">
+      <div class="card-top"><span class="card-title">Path Score Breakdown</span></div>
+      <div id="score-bars"></div>
+      <div style="margin-top:20px;">
+        <div class="card-title" style="margin-bottom:13px;">Risk / Impact Matrix</div>
+        <div id="risk-bars"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-top"><span class="card-title">Multi-Dimension Comparison</span></div>
+      <div style="position:relative;height:250px;"><canvas id="radarChart"></canvas></div>
+      <div style="display:flex;gap:18px;justify-content:center;margin-top:6px;flex-wrap:wrap;" id="radar-legend"></div>
+      <div class="ib" id="advisory-note"></div>
+    </div>
+  </div>
+  <div id="warnings"></div>
+  <div class="divider"></div>
+  <div class="sec-title">技術債トレンド · Tech Debt Trajectory (6-Year Projection)</div>
+  <div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:6px;">現状のまま放置した場合、技術債は複利で増加します。以下は入力値をもとにした<strong style="color:var(--t1);">3パスの技術債推移シミュレーション</strong>です。縦軸は現状を100とした相対指数です。</div>
+  <div style="font-size:11px;color:var(--t3);font-family:'Space Grotesk',sans-serif;margin-bottom:20px;">Note: Indicative projections based on complexity inputs. Use as directional reference only.</div>
+  <div class="card" style="margin-bottom:8px;"><div style="position:relative;height:280px;"><canvas id="debtChart"></canvas></div></div>
+  <div class="debt-cards" id="debt-cards"></div>
+  <div class="cfo-box"><span class="cfo-label">CFO・経営層への説明ポイント</span><div id="cfo-text" style="font-size:12px;color:var(--t2);line-height:1.65;"></div></div>
+  <div class="divider"></div>
+  <div class="sec-title">推奨POCロードマップ · Recommended POC Roadmap (3 months)</div>
+  <div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:6px;">予算確定・経営承認・ベンダー選定——その全ての前に、<strong style="color:var(--t1);">POCを必ず実施してください。</strong>仮説を検証せずに大規模移行に踏み込むことは、日本市場における最大のリスクです。<br>以下は <strong id="poc-industry-label" style="color:var(--g);"></strong> × <strong id="poc-path-label" style="color:var(--g);"></strong> に特化した、実行可能な3ヶ月アクションプランです。</div>
+  <div style="font-size:12px;color:var(--t3);font-family:'Space Grotesk',sans-serif;margin-bottom:20px;">A POC is non-negotiable. Validate every assumption before committing budget or timeline.</div>
+  <div id="poc-table"></div>
+  <div class="poc-info" id="poc-info"></div>
+</div>
+
+</main>
+
+<footer>
+  <div class="fn">2026 DanLun Logic by Silynn Lee · All Rights Reserved</div>
+  <div class="fn" style="color:var(--g);opacity:.6;">Powered by Vibe Coding &amp; Expert Domain Knowledge</div>
+</footer>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const MF = {
+  ibm_zos:  {label:"IBM z/OS",      labelJp:"IBM z/OS",            vendor:"IBM",    sup:"full",   supLabel:"Full Support",     conn:["CICS","IMS","VSAM","DB2","MQ"],  note:"Most mature connector suite. Native CICS/IMS/VSAM access.", noteJp:"最も成熟したコネクタ群。",riskAdj:0,   color:"#0F62FE"},
+  ibm_as400:{label:"IBM AS/400",    labelJp:"IBM AS/400 (iSeries)",vendor:"IBM",    sup:"full",   supLabel:"Full Support",     conn:["RPG","PCML","DB2 for i","MQ"],   note:"Strong RPG/PCML parsing. Common in Japanese manufacturing.", noteJp:"製造業・地方銀行に普及。",riskAdj:0,   color:"#0043CE"},
+  fujitsu:  {label:"FUJITSU GS21",  labelJp:"富士通 GS21",         vendor:"FUJITSU",sup:"partial",supLabel:"Partial Support",  conn:["COBOL","PL/I","DBLC"],           note:"Proprietary protocols require custom adapter config.", noteJp:"独自プロトコルのためカスタムアダプタ設定が必要。",riskAdj:.15, color:"#E60012"},
+  nec_acos: {label:"NEC ACOS",      labelJp:"NEC ACOSシリーズ",    vendor:"NEC",    sup:"partial",supLabel:"Partial Support",  conn:["COBOL","ACOS JCL","ISAM"],       note:"Proprietary job control. Specialist involvement required.", noteJp:"独自JCLとISAMデータ構造。スペシャリスト参加が必要。",riskAdj:.2,  color:"#00A0E9"},
+  hitachi:  {label:"HITACHI VOS3",  labelJp:"日立 VOS3",           vendor:"HITACHI",sup:"partial",supLabel:"Partial Support",  conn:["COBOL","PL/I","KEIS"],           note:"z/OS-compatible but KEIS extensions require validation POC.", noteJp:"KEIS独自拡張の検証が必要。",riskAdj:.15, color:"#E60026"},
+  unisys:   {label:"Unisys ClearPath",labelJp:"Unisys ClearPath",  vendor:"UNISYS", sup:"limited",supLabel:"Limited/POC req.", conn:["COBOL","MCP JCL","DMSII"],       note:"Rare in Japan. Custom engagement scoping required.", noteJp:"カスタムエンゲージメントのスコーピングが必要。",riskAdj:.3,  color:"#8B5CF6"},
+  tandem:   {label:"Tandem/NonStop",labelJp:"Tandem / HP NonStop", vendor:"HP/HPE", sup:"limited",supLabel:"Limited/POC req.", conn:["TAL","COBOL","SQL/MP"],          note:"Used in Japanese payment rails. Specialized scoping required.", noteJp:"決済システムに使用。専門的なスコーピングが必要。",riskAdj:.25, color:"#F59E0B"},
+  unknown:  {label:"Unknown / TBD", labelJp:"不明 / Unknown",      vendor:"?",      sup:"unknown",supLabel:"TBD",              conn:["TBD"],                            note:"Platform not identified. Conservative defaults applied.", noteJp:"プラットフォーム未特定。保守的デフォルト値で診断します。",riskAdj:.1,  color:"#555555"},
+};
+const SS={full:{color:"#FFCD00",bg:"rgba(255,205,0,.08)",border:"rgba(255,205,0,.3)"},partial:{color:"#FBBF24",bg:"rgba(251,191,36,.06)",border:"rgba(251,191,36,.28)"},limited:{color:"#F87171",bg:"rgba(248,113,113,.06)",border:"rgba(248,113,113,.28)"},unknown:{color:"#888",bg:"rgba(100,100,100,.06)",border:"rgba(100,100,100,.22)"}};
+
+const IND = {
+  banking:{labelJp:"金融 / Banking",risk:.9,
+    noteEn:"Regulatory compliance is paramount. API enablement preserves core while enabling open banking mandates and real-time payment rails.",
+    noteJp:"規制対応が最優先。API活用によるコア温存が戦略的に有利。",
+    context:["日本の大手銀行・地方銀行の多くは1970〜80年代構築のCOBOL勘定系を現在も稼働中","全銀システム対応・FISC安全対策基準・J-SOXへの適合が移行の前提条件となる","オープンバンキングAPI義務化（2018年銀行法改正）により、レガシーへのAPI接続が急務","メガバンクでは1億行超のCOBOLコードが存在するケースもあり、一括置換は現実的でない"],
+    tags:["Basel III","FISC安全対策基準","J-SOX","全銀システム","Open Banking","勘定系"]},
+  manufacturing:{labelJp:"製造 / Manufacturing",risk:.7,
+    noteEn:"Production line continuity is non-negotiable. Japan's monozukuri culture demands zero-defect migration.",
+    noteJp:"生産ラインの停止は許容不可。ものづくり文化に根ざした「止めない移行」が必須。",
+    context:["日本の製造業はMES・ERP・基幹系が密結合しており、一つの変更が生産全体に波及するリスクがある","自動車・電機メーカーを中心にAS/400（IBM i）が生産管理の中核として現役稼働中","Industry 4.0対応でIoTデータとの連携が急増しており、レガシーAPIとの橋渡しが課題","団塊世代の退職により、システムの属人的知識が失われるリスクが2025年問題として顕在化"],
+    tags:["Industry 4.0","MES統合","SCM連携","IBM i/AS400","2025年問題","ものづくり"]},
+  insurance:{labelJp:"保険 / Insurance",risk:.85,
+    noteEn:"Decades of policy data integrity is critical. VSAM-dependent systems are common. IFRS 17 deadline adds urgency.",
+    noteJp:"長期契約データの整合性が最重要。VSAMシステムが多く、IFRS 17対応が喫緊の課題。",
+    context:["生命保険・損保ともに30〜40年前の契約データがVSAMファイルに格納されており、現代DBへの移行が困難","IFRS 17（保険契約の国際会計基準）の完全適用に向け、データアクセス層の刷新が急務","個人情報保護法改正（2022年）と忘れられる権利への対応で、全データの360度把握が義務化","保険業法上の変更届出義務により、システム変更のたびに金融庁との協議が必要で移行に時間がかかる"],
+    tags:["IFRS 17","個人情報保護法","VSAM","保険業法","忘れられる権利","金融庁"]},
+  retail:{labelJp:"小売 / Retail",risk:.6,
+    noteEn:"Speed to market is the key differentiator. API facade decoupling unlocks omnichannel. Legacy POS is the primary bottleneck.",
+    noteJp:"Time-to-Marketが競争優位の源泉。レガシーPOS統合がオムニチャネル化の最大の障壁。",
+    context:["コンビニ・スーパー・百貨店ともにPOSシステムが基幹在庫と密結合しており、EC化の足かせとなっている","ロイヤルティプログラムの乱立（Tポイント・楽天・PayPay等）により、顧客ID統合が複雑化","コロナ後のEC急拡大で、既存のバッチ処理型在庫管理とリアルタイムEC在庫の乖離が常態化","セブン・イレブン等の先行事例がAPI基盤でPOS/EC/配送を統合し、Time-to-Marketを3分の1に短縮"],
+    tags:["EC統合","ロイヤルティPF","オムニチャネル","リアルタイム在庫","POS連携","顧客ID統合"]},
+};
+
+const REC={
+  api:{title:"API Enablement",titleJp:"APIによるレガシー資産活用",badge:"推奨 RECOMMENDED",badgeC:"#FFCD00",badgeBC:"rgba(255,205,0,.15)",borderC:"rgba(255,205,0,.4)",bgC:"rgba(255,205,0,.04)",cls:"rec-api",accentC:"#FFCD00",
+    desc:"OpenLegacy Phased Co-Existence戦略を採用。レガシーシステムをそのまま稼働させながら、コアビジネスロジックをAPIとして即座に公開します。",
+    risks:[{label:"Migration Risk",val:15,color:"#FFCD00"},{label:"Business Continuity",val:95,color:"#FFCD00"},{label:"Time-to-Market Gain",val:88,color:"#FFCD00"},{label:"Cost vs. Rebuild",val:82,color:"#FFCD00"}],ttm:"3-6ヶ月",roi:"353%"},
+  refactor:{title:"Refactor",titleJp:"段階的リファクタリング",badge:"代替案 ALTERNATIVE",badgeC:"#60A5FA",badgeBC:"rgba(59,130,246,.15)",borderC:"rgba(59,130,246,.4)",bgC:"rgba(59,130,246,.04)",cls:"rec-refactor",accentC:"#60A5FA",
+    desc:"既存コードベースの構造を改善しモジュール化を進めます。ドキュメントが整備されており技術的負債が中程度の場合に適しています。",
+    risks:[{label:"Migration Risk",val:45,color:"#60A5FA"},{label:"Business Continuity",val:72,color:"#60A5FA"},{label:"Time-to-Market Gain",val:55,color:"#60A5FA"},{label:"Cost vs. Rebuild",val:68,color:"#60A5FA"}],ttm:"6-12ヶ月",roi:"~180%"},
+  rebuild:{title:"Rebuild",titleJp:"フルリビルド",badge:"ハイリスク HIGH RISK",badgeC:"#F87171",badgeBC:"rgba(239,68,68,.15)",borderC:"rgba(239,68,68,.4)",bgC:"rgba(239,68,68,.04)",cls:"rec-rebuild",accentC:"#F87171",
+    desc:"ビジネスロジックの全面刷新が必要な場合に限定推奨。予算・期間・スキルセットが揃った環境でのみ実施可能です。",
+    risks:[{label:"Migration Risk",val:78,color:"#F87171"},{label:"Business Continuity",val:42,color:"#F87171"},{label:"Time-to-Market Gain",val:35,color:"#F87171"},{label:"Cost vs. Rebuild",val:20,color:"#F87171"}],ttm:"18-36ヶ月",roi:"~120%"},
+};
+
+const HYBRID={
+  "api-refactor":{title:"双軌制 · Dual-Track Strategy",en:"API Quick Win + Parallel Refactor",p1:"Phase 1 (0-6M): API Enablementで即座に業務価値を解放。既存システム稼働のままデジタルサービスを先行リリース。",p2:"Phase 2 (6-24M): 並行してコアモジュールをRefactor。APIレイヤーが安全網として機能し、リファクタリングリスクを大幅低減。",why:"スコア拮抗時は「Quick Winで経営層の信頼を得ながら中長期で技術債削減」する双軌制が最もリスク・リターンバランスが高い。",ttm:"6M (API) + 24M (Refactor)",risk:"Low-Medium"},
+  "api-rebuild":{title:"段階的代替 · Phased Replacement",en:"API Bridge + Selective Rebuild",p1:"Phase 1 (0-6M): API Enablementで現行システムを継続稼働させながら、新規デジタルサービスを即座にリリース。",p2:"Phase 2 (12-36M): 優先度の高いドメインから選択的にRebuild。APIレイヤーが旧新システムの橋渡し役となり段階的切り替えを実現。",why:"完全Rebuildは高コスト・高リスクだが、APIを先に敷くことで止めないRebuildが実現できる。",ttm:"6M (API) + 36M (Rebuild)",risk:"Medium"},
+  "refactor-rebuild":{title:"段階的全面刷新 · Progressive Overhaul",en:"Refactor Core + Domain-by-Domain Rebuild",p1:"Phase 1 (0-12M): 変更頻度の高いモジュールをRefactorし開発速度と安定性を先に確保。テスト基盤とCI/CDを整備。",p2:"Phase 2 (12-36M): Refactorで得た知見とテスト資産を活用し、ドメイン単位でのRebuildを実施。技術債を段階的に解消。",why:"予算と技術力が十分にある場合、RefactorとRebuildを組み合わせることでリスク分散しながら完全モダン化を達成できる。",ttm:"12M (Refactor) + 36M (Rebuild)",risk:"Medium-High"},
+};
+
+const POC={
+  banking:{
+    api:[
+      {phase:"Month 1",title:"Discovery & Dependency Mapping",titleJp:"現状調査・依存関係マッピング",items:["COBOLプログラムのインベントリ作成（対象スコープの合意）","PGM CALL連鎖の可視化と、APIとして切り出す候補機能の優先順位付け","認証・暗号化・監査ログの現状方式をヒアリングし、API連携時のブロッカー有無を確認","FISC安全対策基準の対象範囲をIT部門と確認し、POCスコープへの影響を特定"],del:"依存関係マップ + API候補リスト + セキュリティ・規制ブロッカー確認シート"},
+      {phase:"Month 2",title:"API Prototype & Integration Test",titleJp:"APIプロトタイプ・接続テスト",items:["優先度1位の機能（例：口座照会）のREST API自動生成","既存認証基盤（RACF等）との接続方式の検討・テスト（新規実装ではなく接続確認）","フロントエンド担当チームとのサンドボックス接続テスト","レスポンスタイム・スループットの初期計測と本番水準との比較"],del:"動作するAPIプロトタイプ + 接続テスト結果 + 性能初期計測レポート"},
+      {phase:"Month 3",title:"Feasibility Assessment & Go/No-Go",titleJp:"実現可能性評価・Go/No-Go",items:["POC結果をもとに技術的ブロッカーの有無を整理","本番移行に向けて追加調査が必要な項目の洗い出し（規制・セキュリティ・性能）","コスト試算に必要なデータ項目の特定と、入手可能な情報での概算レンジ提示","経営層向けGo/No-Go判断材料の作成（前提条件・リスク・次ステップを明記）"],del:"技術的実現可能性レポート + 概算コストレンジ + Go/No-Go判断資料"},
+    ],
+    refactor:[
+      {phase:"Month 1",title:"Code Audit & Risk Assessment",titleJp:"コード監査・リスク評価",items:["COBOL静的解析ツールの適用（ネスト深度・デッドコード・複雑度の計測）","未文書化ロジックの洗い出しと、業務担当者へのヒアリングによる仕様確認","J-SOX内部統制への影響範囲の確認（IT部門・内部監査との合意）","現状のテスト資産の有無を確認し、回帰テストのベースライン整備方針を決定"],del:"コード品質レポート + リスクマトリクス + テスト整備方針"},
+      {phase:"Month 2",title:"Module Decomposition Pilot",titleJp:"モジュール分割パイロット",items:["変更頻度が高く、かつ影響範囲が限定的なモジュールを1本選定","機能変更なしの構造改善（リファクタリング）を実施し、動作保証を確認","開発チームへの技術トレーニングと、作業見積もり精度の検証","1モジュールの実績をもとに全体工数の仮説を更新"],del:"リファクタリング済みモジュール + テスト結果 + 工数仮説アップデート"},
+      {phase:"Month 3",title:"Velocity Baseline & Roadmap",titleJp:"速度ベースライン・ロードマップ策定",items:["POC期間中のリリーススピード・不具合率を計測し、改善効果の初期値を算出","残存技術的負債の定量化（対象モジュール数・優先度・推定工数のレンジ）","12〜24ヶ月の全体ロードマップ案を作成（確定値ではなく仮説として提示）","予算申請に向けた概算レンジと、精度向上に必要な追加情報の提示"],del:"速度ベースラインレポート + ロードマップ仮説 + 概算レンジ資料"},
+    ],
+    rebuild:[
+      {phase:"Month 1",title:"Architecture Vision & Vendor Shortlist",titleJp:"アーキテクチャ方針・ベンダー候補整理",items:["ターゲットアーキテクチャの方向性合意（クラウドベンダー・フレームワーク選定基準）","既存業務ロジックの要件定義に必要なヒアリング対象者と期間の特定","ベンダー候補のロングリスト作成と、選定基準の関係者合意","データ移行の複雑度を初期評価し、最大のリスク要因を特定"],del:"アーキテクチャ方針書 + ベンダー候補リスト + リスク初期評価"},
+      {phase:"Month 2",title:"Core Domain Prototype",titleJp:"コアドメインプロトタイプ",items:["最重要業務ドメイン1機能の新規実装（スコープを明確に限定）","旧システムとのデータ整合性検証（サンプルデータ使用）","開発生産性の実績計測（見積もり精度の検証に使用）","判明した技術的課題・前提条件の変更点を記録"],del:"プロトタイプ + 整合性検証結果 + 実績ベース工数データ"},
+      {phase:"Month 3",title:"Risk Gate & Decision Framework",titleJp:"リスクゲート・意思決定フレームワーク",items:["POC実績をもとにコスト・期間の概算レンジを更新（当初想定との乖離を明示）","続行・縮小・中止・代替案（API Enablement等）の判断基準を整理","経営承認に必要な情報と、現時点で入手できていない情報を明確に分離","次フェーズ開始の前提条件（予算・人員・規制対応）を関係者で合意"],del:"リスクゲートレポート + 意思決定フレームワーク + 経営承認資料"},
+    ],
+  },
+  manufacturing:{
+    api:[
+      {phase:"Month 1",title:"Production System Mapping",titleJp:"生産系システムマッピング",items:["MES/ERP/基幹システムの連携図作成と、変更時の影響範囲の初期整理","生産ライン停止が許容できない時間帯・期間を現場担当者とともに特定","PGM CALL連鎖のうち、生産に影響しない補助系機能を優先候補として選定","既存のセキュリティ・認証方式をヒアリングし、API接続時のブロッカー有無を確認"],del:"生産系依存関係図 + POC優先候補リスト + ブロッカー確認シート"},
+      {phase:"Month 2",title:"Non-Disruptive API Prototype",titleJp:"非停止APIプロトタイプ",items:["生産に影響しない補助系機能（例：設備稼働状況照会）のAPI先行生成","非本番環境でのIoTデータ連携テスト（実環境への接続は次フェーズ）","既存MQメッセージとのCoexistence動作確認","本番並行稼働を想定したシミュレーションテストの実施"],del:"補助系APIプロトタイプ + 並行稼働シミュレーション結果"},
+      {phase:"Month 3",title:"Cutover Readiness & Roadmap",titleJp:"切替準備状況・ロードマップ",items:["POC結果をもとに本番切替の実現可能性と前提条件を整理","ロールバック手順の初期設計（確定版は本格フェーズで作成）","Industry 4.0対応ロードマップの方向性案を作成（仮説として提示）","コスト試算に必要なデータ項目の特定と概算レンジの提示"],del:"切替準備状況レポート + ロードマップ方向性案 + 概算レンジ"},
+    ],
+    refactor:[
+      {phase:"Month 1",title:"Inventory & Change Frequency Analysis",titleJp:"インベントリ・変更頻度分析",items:["過去2〜3年のコード変更履歴を分析し、変更頻度の高いモジュールを特定","変更頻度と生産への影響度を組み合わせた優先度マトリクスの作成","テスト資産の現状確認（テストケースの有無・自動化率）","開発チームの稼働状況と、POC並行作業の実現可能性を確認"],del:"変更頻度マトリクス + 優先度リスト + テスト資産現状確認シート"},
+      {phase:"Month 2",title:"Low-Risk Module Refactoring Pilot",titleJp:"低リスクモジュール試験改修",items:["生産影響が最も小さいモジュールを1本選定し、構造改善を実施","改修前後の動作一致をテストで確認（機能変更なし）","SCM連携インターフェースへの影響がないことを確認","作業実績をもとに全体工数の仮説を現実的な数字に更新"],del:"試験改修済みモジュール + 動作確認結果 + 工数仮説アップデート"},
+      {phase:"Month 3",title:"Sustainability Assessment & Next Steps",titleJp:"保守性評価・次ステップ整理",items:["POC実績をもとに保守コストの改善見込みをレンジで提示","技術継承リスク（担当者の知識依存度）の初期評価","次フェーズのスコープ・体制・予算レンジについて関係者と合意形成","推進の前提条件（開発リソース確保・経営コミットメント）を明確化"],del:"保守性評価レポート + 次ステップ合意書 + 予算レンジ資料"},
+    ],
+    rebuild:[
+      {phase:"Month 1",title:"Greenfield Architecture Direction",titleJp:"新アーキテクチャ方針策定",items:["Industry 4.0対応のターゲットアーキテクチャの方向性を関係者で合意","生産データの移行複雑度を初期評価し、最大リスク要因を特定","旧システムとの並行稼働が必要な期間・条件を現場と確認","開発チームのスキルギャップを評価し、外部調達が必要な領域を特定"],del:"アーキテクチャ方針書 + リスク初期評価 + スキルギャップ分析"},
+      {phase:"Month 2",title:"Core Manufacturing Domain Prototype",titleJp:"コア製造ドメインプロトタイプ",items:["生産管理の中核機能1つを新規実装（スコープを厳密に限定）","旧システムとのサンプルデータ整合性検証","IoT/センサーデータとの接続テスト（実環境ではなくシミュレーション）","実績工数を記録し、全体見積もり精度の検証に活用"],del:"コアドメインプロトタイプ + 整合性検証結果 + 実績工数記録"},
+      {phase:"Month 3",title:"Decision Gate & Commitment Checklist",titleJp:"意思決定ゲート・前提条件確認",items:["POC実績をもとにコスト・期間の概算レンジを更新","続行・縮小・API Enablement切り替えの判断基準を整理","取締役会承認に必要な情報と、現時点で不明な情報を分離して提示","次フェーズ開始に必要なコミットメント事項の関係者合意"],del:"意思決定ゲートレポート + 前提条件確認リスト + 取締役会資料"},
+    ],
+  },
+  insurance:{
+    api:[
+      {phase:"Month 1",title:"Policy Data & VSAM Assessment",titleJp:"契約データ・VSAM評価",items:["VSAM/DB2の契約データ棚卸しと、POCスコープとなる対象データの特定","個人情報保護法・GDPR該当データの範囲をコンプライアンス担当とともに確認","既存の認証・暗号化・監査ログ方式をヒアリングし、API連携時のブロッカー有無を調査","保険業法上の変更届出が必要か否かを法務・コンプライアンス部門に確認"],del:"契約データマップ + VSAM接続性確認 + 規制ブロッカー確認シート"},
+      {phase:"Month 2",title:"API Generation & Integration Test",titleJp:"API生成・接続テスト",items:["保険料計算または契約照会（どちらか1機能）のREST API自動生成","既存の個人情報保護対応（アクセス制御等）との接続方式の確認テスト","IFRS 17対応に必要なデータアクセスの要件を業務担当者とともに整理","API経由でのデータアクセス可否をサンドボックス環境で検証"],del:"動作するAPI + 接続テスト結果 + IFRS 17要件整理メモ"},
+      {phase:"Month 3",title:"Compliance Gap & Feasibility Report",titleJp:"規制ギャップ・実現可能性レポート",items:["POC結果をもとに規制対応上の追加作業項目を整理（適合確認は本格フェーズで実施）","監査証跡の取得方式について内部監査部門と方針合意","コスト試算に必要な情報項目の特定と、入手可能な範囲での概算レンジ提示","法務・コンプライアンス・IT部門の三者でGo/No-Go判断材料を確認"],del:"規制ギャップレポート + 概算レンジ資料 + Go/No-Go判断材料"},
+    ],
+    refactor:[
+      {phase:"Month 1",title:"Contract System Audit",titleJp:"レガシー契約システム監査",items:["長期契約データ（20年超）の整合性を抽出検査（全件ではなくサンプリング）","COBOLビジネスロジックの主要部分を業務担当者へのヒアリングでドキュメント化","IFRS 17移行に必要なデータ変換の複雑度を初期評価","テスト資産の現状確認と、回帰テスト整備に必要な工数の仮説算出"],del:"契約システム監査レポート + IFRS 17初期評価 + テスト整備工数仮説"},
+      {phase:"Month 2",title:"Business Logic Extraction Pilot",titleJp:"業務ロジック抽出パイロット",items:["保険料計算ロジック（1商品・1パターン）のモジュール化を試験実施","業務担当者との確認セッションでロジックの正確性を検証","単体テストの作成と、回帰テスト自動化の実現可能性を確認","作業実績をもとに全体工数レンジの仮説を更新"],del:"試験抽出済みロジックモジュール + 業務担当者確認済み仕様書 + 工数仮説"},
+      {phase:"Month 3",title:"Compliance Roadmap & Budget Framework",titleJp:"コンプライアンスロードマップ・予算枠組み",items:["IFRS 17完全対応のマイルストーン案を作成（確定版は本格フェーズで作成）","個人情報保護法対応の優先項目と、対応に必要なリソースレンジを提示","監査対応工数の概算（精緻化に必要な追加情報を明示）","予算申請に向けた資料の骨格作成と、承認プロセスの確認"],del:"コンプライアンスロードマップ案 + 概算予算枠組み + 予算申請骨格資料"},
+    ],
+    rebuild:[
+      {phase:"Month 1",title:"Policy Admin Platform Direction",titleJp:"契約管理プラットフォーム方針策定",items:["次世代契約管理プラットフォームの候補を整理し、選定基準を関係者で合意","既存契約データの移行複雑度を初期調査（全件移行の可否・期間の仮説）","IFRS 17ネイティブ対応に必要な要件を業務・財務部門とともに整理","ベンダー候補へのRFI（情報提供依頼）の発行準備"],del:"プラットフォーム選定基準 + 移行複雑度初期評価 + RFI草案"},
+      {phase:"Month 2",title:"Data Migration Feasibility Prototype",titleJp:"データ移行実現可能性プロトタイプ",items:["サンプル契約データ（限定件数）の新システムへの試験移行","VSAM形式からクラウドDBへの変換ロジックの実現可能性確認","新旧システムのデータ整合性をサンプルレベルで検証","移行に必要な追加作業・ツールの洗い出し"],del:"データ移行プロトタイプ + 実現可能性確認レポート + 追加作業リスト"},
+      {phase:"Month 3",title:"Regulatory Pre-Consultation & Decision Gate",titleJp:"規制事前確認・意思決定ゲート",items:["金融庁・保険業法対応の観点から、事前相談の要否と手続きスケジュールを確認","移行期間中の契約者保護に関する法務・コンプライアンス部門との方針合意","コスト・期間の概算レンジを更新し、当初想定との乖離を経営層に説明","続行・縮小・API Enablement切り替えの判断基準を関係者で合意"],del:"規制事前確認メモ + 意思決定ゲートレポート + 経営層説明資料"},
+    ],
+  },
+  retail:{
+    api:[
+      {phase:"Month 1",title:"Omnichannel Integration Mapping",titleJp:"オムニチャネル統合マッピング",items:["EC/POS/在庫/ロイヤルティ連携の現状図作成と、最も優先度の高い接続ポイントの特定","顧客ID統合の現状と課題をEC・店舗・ITの各担当者からヒアリング","既存の認証・セキュリティ方式を確認し、API公開時のブロッカー有無を調査","OpenLegacy接続テスト（在庫照会・購買履歴の読み取り）を非本番環境で実施"],del:"オムニチャネル依存関係マップ + API優先候補リスト + ブロッカー確認シート"},
+      {phase:"Month 2",title:"Customer-Facing API Sprint",titleJp:"顧客向けAPIスプリント",items:["優先度1位の機能（例：在庫照会）のREST API生成と動作確認","モバイルアプリまたはECサイトとのサンドボックス接続テスト","ロイヤルティポイント照会APIの生成と、既存ポイントシステムとの接続確認","レスポンスタイムの初期計測（ピーク時シミュレーションは次フェーズ）"],del:"顧客向けAPIプロトタイプ + 接続テスト結果 + 初期性能計測"},
+      {phase:"Month 3",title:"TTM Baseline & Scale Readiness",titleJp:"TTMベースライン・スケール準備状況",items:["POC期間中のリリーススピードを計測し、現状のTTMベースラインを確立","本番展開に向けて必要な追加作業（性能・セキュリティ・負荷テスト等）を整理","開発チームが自律的にAPIを追加できる体制の実現可能性を評価","コスト試算に必要な情報の特定と、概算レンジの提示"],del:"TTMベースラインレポート + 本番展開準備リスト + 概算レンジ資料"},
+    ],
+    refactor:[
+      {phase:"Month 1",title:"Frontend Decoupling Assessment",titleJp:"フロントエンド分離評価",items:["バックエンドとUI層の結合度を分析し、分離の難易度を初期評価","変更頻度が高く、かつ影響範囲が限定的な機能TOP10を抽出","競合他社との機能ギャップを確認し、優先改修対象の根拠を整理","テスト資産の現状を確認し、自動化に必要な工数レンジを仮算出"],del:"結合度分析レポート + 優先改修リスト + テスト整備工数仮説"},
+      {phase:"Month 2",title:"High-Value Feature Refactoring Pilot",titleJp:"高価値機能リファクタリング試験",items:["優先度1位の機能（例：商品検索）のモジュール化を試験実施","改修前後の動作一致をテストで確認（機能変更なし）","モバイル対応のAPIインターフェース整備の実現可能性を確認","作業実績をもとに全体工数の仮説を現実的な数字に更新"],del:"試験改修済み機能モジュール + テスト結果 + 工数仮説アップデート"},
+      {phase:"Month 3",title:"Release Cadence Improvement Plan",titleJp:"リリースサイクル改善計画",items:["POC実績をもとにリリースサイクル改善の効果をレンジで提示","CI/CDパイプライン整備の優先項目と実現可能性の確認","季節需要（セール・年末商戦）対応のスケーリング要件を整理","次フェーズのスコープ・体制・予算レンジについて関係者と合意"],del:"リリースサイクル改善計画 + CI/CD整備優先リスト + 概算予算レンジ"},
+    ],
+    rebuild:[
+      {phase:"Month 1",title:"Modern Commerce Platform Evaluation",titleJp:"モダンコマースプラットフォーム評価",items:["クラウドネイティブECプラットフォームの候補を整理し、選定基準を関係者で合意","既存ロイヤルティ・在庫データの移行複雑度を初期調査","顧客データ基盤（CDP）の要件を、マーケティング・IT部門とともに整理","競合他社の移行事例をリサーチし、想定コスト・期間の参考レンジを収集"],del:"プラットフォーム選定基準 + 移行複雑度初期評価 + 参考レンジ資料"},
+      {phase:"Month 2",title:"Core Commerce Prototype",titleJp:"コアコマースプロトタイプ",items:["商品カタログまたはカート機能（どちらか1機能）の新規実装（スコープ限定）","旧基幹システムとのサンプルデータ同期検証","ユーザーテスト（限定ユーザー・社内メンバー）でのUX初期検証","実績工数の記録と、全体見積もり精度の検証"],del:"コアコマースプロトタイプ + データ同期検証結果 + UX初期フィードバック"},
+      {phase:"Month 3",title:"Phased Launch Feasibility & Decision Gate",titleJp:"段階的ローンチ実現可能性・意思決定ゲート",items:["特定地域・店舗でのパイロットに向けた準備状況と前提条件の確認","旧新システム並行稼働の期間・コストの概算レンジを更新","続行・縮小・API Enablement切り替えの判断基準を整理","取締役会承認に必要な情報と、現時点で不明な情報を分離して提示"],del:"パイロット準備状況レポート + 意思決定ゲート資料 + 取締役会説明資料"},
+    ],
+  },
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let selMf = "ibm_zos";
+let toggleState = {undoc:null, age:null, succ:null};
+let custVal="unknown", budgetVal="unknown", riskVal="unknown";
+let radarChartInst=null, debtChartInst=null;
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function hexRgb(h){return parseInt(h.slice(1,3),16)+","+parseInt(h.slice(3,5),16)+","+parseInt(h.slice(5,7),16);}
+
+function updateSlider(el,lblId,max){
+  const pct=(el.value/max*100)+"%";
+  el.style.setProperty("--sv",pct);
+  document.getElementById(lblId).textContent=el.value+(lblId==="lbl-depth"?"層":"本");
+}
+
+function onIndustryChange(){
+  const ind=IND[document.getElementById("sel-industry").value];
+  const el=document.getElementById("ind-info");
+  el.innerHTML=`<div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:10px;">${ind.noteEn}</div>
+    <div style="font-size:12px;color:var(--t3);font-family:'Noto Sans JP',sans-serif;line-height:1.6;margin-bottom:14px;">${ind.noteJp}</div>
+    <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'Space Grotesk',sans-serif;margin-bottom:10px;opacity:.8;">Japan Market Context</div>
+    <ul style="list-style:none;padding:0;margin:0;">${ind.context.map(c=>`<li style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start;"><span style="color:var(--g);font-size:10px;margin-top:3px;flex-shrink:0;opacity:.7;">-</span><span style="font-size:12px;color:var(--t2);line-height:1.6;font-family:'Noto Sans JP',sans-serif;">${c}</span></li>`).join("")}</ul>
+    <div style="margin-top:14px;">${ind.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>`;
+}
+
+function buildMfGrid(){
+  const g=document.getElementById("mf-grid");
+  g.innerHTML=Object.entries(MF).map(([k,v])=>`
+    <div class="mfc${k===selMf?" sel":""}" id="mfc-${k}" style="--ac:${v.color};--acr:${hexRgb(v.color)};" onclick="selectMf('${k}')">
+      <div class="mfv">${v.vendor}</div>
+      <div class="mfn">${v.label}</div>
+      <div class="mfjp">${v.labelJp}</div>
+      <span class="mfs ${v.sup==="full"?"sf":v.sup==="partial"?"sp":v.sup==="limited"?"sl":"su"}">${v.supLabel}</span>
+    </div>`).join("");
+  updateMfDetail();
+}
+
+function selectMf(k){
+  document.querySelectorAll(".mfc").forEach(el=>el.classList.remove("sel"));
+  document.getElementById("mfc-"+k).classList.add("sel");
+  selMf=k;
+  updateMfDetail();
+}
+
+function updateMfDetail(){
+  const v=MF[selMf];const s=SS[v.sup];
+  const d=document.getElementById("mf-detail");
+  d.style.background=s.bg;d.style.borderColor=s.border;
+  d.innerHTML=`<div style="font-size:11px;font-weight:600;color:${s.color};letter-spacing:1px;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;margin-bottom:8px;">${v.label} · ${v.supLabel}</div>
+    <div style="font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;margin-bottom:6px;">Connectors</div>
+    ${v.conn.map(c=>`<span class="cp" style="background:rgba(${hexRgb(s.color)},.12);color:${s.color};border:1px solid rgba(${hexRgb(s.color)},.25);">${c}</span>`).join("")}
+    <div style="font-size:12px;color:var(--t2);line-height:1.6;margin-top:10px;">${v.note}</div>
+    <div style="font-size:11px;color:var(--t3);font-family:'Noto Sans JP',sans-serif;margin-top:4px;line-height:1.5;">${v.noteJp}</div>
+    ${v.sup!=="full"?`<div style="margin-top:10px;font-size:12px;color:#FBBF24;">(!) 非IBMプラットフォーム検出 - 追加スコーピングセッションおよびフィジビリティPOCを推奨します。</div>`:""}`;
+}
+
+function buildToggles(){
+  const items=[
+    {key:"undoc",l:"Undocumented COBOL logic present",jp:"未文書化COBOLロジックが存在する"},
+    {key:"age",  l:"Team avg age exceeds 55 years",  jp:"運用チームの平均年齢が55歳超"},
+    {key:"succ", l:"No identified successor / heir",  jp:"後継者・引き継ぎ者が不在"},
+  ];
+  document.getElementById("toggles").innerHTML=items.map((it,i)=>`
+    <div class="trow" style="${i===2?"border-bottom:none":""}">
+      <div class="tlbl">${it.l}<span class="tlbl-jp">${it.jp}</span></div>
+      <div class="t3g">
+        <div class="t3b${toggleState[it.key]===false?" no":""}" onclick="setToggle('${it.key}',false,this)">No</div>
+        <div class="t3b${toggleState[it.key]===true?" yes":""}" onclick="setToggle('${it.key}',true,this)">Yes</div>
+        <div class="t3b${toggleState[it.key]===null?" unk":""}" onclick="setToggle('${it.key}',null,this)">?</div>
+      </div>
+    </div>`).join("");
+}
+
+function setToggle(key,val,el){
+  toggleState[key]=val;
+  const grp=el.parentElement;
+  grp.querySelectorAll(".t3b").forEach(b=>{b.classList.remove("no","yes","unk");});
+  if(val===false)el.classList.add("no");
+  else if(val===true)el.classList.add("yes");
+  else el.classList.add("unk");
+}
+
+function buildRow3(){
+  const opts=[
+    {id:"cust",  label:"Customization Level",  num:"04",lbl:"業務特化カスタマイズ度",  jp:"Business-specific",   options:[["low","低 Low"],["medium","中 Med"],["high","高 High"],["unknown","不明 ?"]]},
+    {id:"budget",label:"Budget Availability",   num:"05",lbl:"モダナイゼーション予算規模",jp:"Modernization budget", options:[["low","限定"],["medium","標準"],["high","潤沢"],["unknown","不明 ?"]]},
+    {id:"risk",  label:"Risk Tolerance",         num:"06",lbl:"リスク許容度",            jp:"Organization risk",   options:[["low","保守的"],["medium","標準的"],["high","積極的"],["unknown","不明 ?"]]},
+  ];
+  document.getElementById("row3").innerHTML=opts.map(c=>`
+    <div class="card">
+      <div class="card-top"><span class="card-title">${c.label}</span><span class="card-num">${c.num}</span></div>
+      <label class="fl" style="margin-bottom:12px;">${c.lbl}<span class="fl-jp">${c.jp}</span></label>
+      <div class="rgroup" id="rg-${c.id}">
+        ${c.options.map(([v,l])=>`<div class="rbtn${v==="unknown"?" uopt":""}" onclick="setRadio('${c.id}','${v}',this)">${l}</div>`).join("")}
+      </div>
+      <div id="unk-hint-${c.id}" style="margin-top:10px;font-size:11px;color:#666;font-family:'Space Grotesk',sans-serif;line-height:1.5;display:none;">保守的な中間値を使用して診断します</div>
+    </div>`).join("");
+  setRadio("cust","unknown",document.querySelector("#rg-cust .uopt"));
+  setRadio("budget","unknown",document.querySelector("#rg-budget .uopt"));
+  setRadio("risk","unknown",document.querySelector("#rg-risk .uopt"));
+}
+
+function setRadio(id,val,el){
+  if(id==="cust")custVal=val;
+  else if(id==="budget")budgetVal=val;
+  else riskVal=val;
+  document.querySelectorAll(`#rg-${id} .rbtn`).forEach(b=>b.classList.remove("on"));
+  el.classList.add("on");
+  const hint=document.getElementById("unk-hint-"+id);
+  if(hint)hint.style.display=val==="unknown"?"block":"none";
+}
+
+// ── ENGINE ────────────────────────────────────────────────────────────────────
+function compute(){
+  const industry=document.getElementById("sel-industry").value;
+  const mf=MF[selMf];
+  const cfg=IND[industry];
+  const depth=+document.getElementById("sl-depth").value;
+  const ifaces=+document.getElementById("sl-ifaces").value;
+  const {undoc,age,succ}=toggleState;
+
+  const unk=[];
+  if(undoc===null)unk.push("COBOLドキュメント");
+  if(age===null)unk.push("チーム年齢");
+  if(succ===null)unk.push("後継者");
+  if(custVal==="unknown")unk.push("カスタマイズ度");
+  if(budgetVal==="unknown")unk.push("予算規模");
+  if(riskVal==="unknown")unk.push("リスク許容度");
+  if(selMf==="unknown")unk.push("プラットフォーム");
+
+  const cx=(depth/10)*.3+(undoc===null?.15:undoc?.3:0)+(age===null?.1:age?.2:0)+(succ===null?.1:succ?.2:0);
+  const cu=custVal==="unknown"?.55:custVal==="high"?1:custVal==="medium"?.55:.2;
+  const iv=Math.min(ifaces/20,1);
+  const bu=budgetVal==="unknown"?.5:budgetVal==="high"?1:budgetVal==="medium"?.5:.2;
+  const rv=riskVal==="unknown"?.5:riskVal==="low"?1:riskVal==="medium"?.5:.15;
+  const pr=mf.riskAdj;
+
+  const apiS=cx*.30+cu*.20+iv*.15+rv*.15*cfg.risk+pr*.08;
+  const refS=(1-cx)*.45+(1-cu)*.30+(1-rv)*.15+(1-iv)*.10-pr*.06;
+  const rebS=bu*.40+(1-rv)*.25+(1-cu)*.25+(1-cx)*.10-pr*.06;
+  const tot=Math.max(apiS+refS+rebS,.001);
+  const norm={api:apiS/tot,refactor:refS/tot,rebuild:rebS/tot};
+
+  let primary="api";
+  if(norm.refactor>norm.api&&norm.refactor>norm.rebuild)primary="refactor";
+  if(norm.rebuild>norm.api&&norm.rebuild>norm.refactor)primary="rebuild";
+
+  const sorted=Object.entries(norm).sort((a,b)=>b[1]-a[1]);
+  const gap=sorted[0][1]-sorted[1][1];
+  const hybridKey=gap<=.15?[sorted[0][0],sorted[1][0]].sort().join("-"):null;
+  const hybrid=hybridKey&&HYBRID[hybridKey]?HYBRID[hybridKey]:null;
+
+  const conf=Math.max(Math.round((sorted[0][1]-unk.length*.04)*100),30);
+  const growthRate=1+(cx*.12)+(cu*.06);
+
+  const debtData=[0,1,2,3,4,5,6].map(y=>({
+    year:y+"Y",
+    inaction:Math.round(100*Math.pow(growthRate,y)),
+    api:Math.max(y===0?100:Math.round(100+(y*4)),0),
+    refactor:Math.max(y<=1?Math.round(100+(y*8)):Math.round(100-((y-1)*18)),0),
+    rebuild:y===0?100:y===1?145:y===2?130:Math.max(130-((y-2)*40),10),
+  }));
+
+  return {primary,norm,conf,hybrid,unk,mf,cfg,industry,cx,cu,debtData};
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function runAssessment(){
+  const r=compute();
+  const meta=REC[r.primary];
+
+  document.getElementById("results").style.display="block";
+  document.getElementById("results").classList.add("fade");
+  document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"});
+
+  // Unknown notice
+  const unkEl=document.getElementById("unk-notice");
+  unkEl.innerHTML=r.unk.length>0?`<div style="background:rgba(100,100,100,.06);border:1px dashed #2A3A4A;border-radius:4px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:flex-start;gap:12px;">
+    <span style="font-size:16px;color:#888;">?</span>
+    <div>
+      <div style="font-size:12px;font-weight:600;color:#888;font-family:'Space Grotesk',sans-serif;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">不明項目あり · Incomplete Data</div>
+      <div style="font-size:12px;color:var(--t3);line-height:1.6;">未入力項目: <span style="font-family:'Space Grotesk',sans-serif;color:#666;">${r.unk.join(", ")}</span></div>
+      <div style="margin-top:6px;font-size:11px;color:#555;font-family:'Space Grotesk',sans-serif;">保守的なデフォルト値を使用しています。Confidenceスコアを下方修正済み。</div>
+    </div>
+  </div>`:"";
+
+  // Platform strip
+  const ss=SS[r.mf.sup];
+  document.getElementById("platform-strip").innerHTML=`<div class="ss ${r.mf.sup}">
+    <div style="font-size:11px;font-weight:600;color:${ss.color};letter-spacing:1px;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;margin-bottom:8px;">${r.mf.label} · OpenLegacy Connector: ${r.mf.supLabel}</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.6;">${r.mf.note}</div>
+    <div style="font-size:11px;color:var(--t3);font-family:'Noto Sans JP',sans-serif;margin-top:4px;line-height:1.5;">${r.mf.noteJp}</div>
+    <div style="margin-top:9px;">${r.mf.conn.map(c=>`<span class="cp" style="background:rgba(${hexRgb(ss.color)},.12);color:${ss.color};border:1px solid rgba(${hexRgb(ss.color)},.25);">${c}</span>`).join("")}</div>
+  </div>`;
+
+  // Rec card
+  document.getElementById("rec-card").innerHTML=`<div class="rc ${meta.cls}" style="--rc-accent:${meta.accentC};">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <span class="rbadge" style="background:${meta.badgeBC};color:${meta.badgeC};">${meta.badge}</span>
+        <div class="rtit">${meta.title}</div>
+        <div class="rtj">${meta.titleJp}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="conf-n">${r.conf}%</div>
+        <div class="conf-l">Confidence</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:16px;">${meta.desc}</p>
+    <div class="mrow">
+      <div class="mi"><div class="mv">${meta.ttm}</div><div class="mk">Time to Market</div></div>
+      <div class="mi"><div class="mv">${meta.roi}</div><div class="mk">Projected ROI</div></div>
+      <div class="mi" style="border-color:#2A3A4A;border-style:dashed;">
+        <div class="mv" style="font-size:13px;color:#555;">TBD</div>
+        <div style="font-size:10px;color:#444;margin-top:4px;line-height:1.4;font-family:'Noto Sans JP',sans-serif;">費用はEngagement Manager確認要</div>
+        <div class="mk" style="color:#444;">Cost Estimate</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Hybrid
+  const hybEl=document.getElementById("hybrid-section");
+  if(r.hybrid){
+    hybEl.innerHTML=`<div class="hybrid-card">
+      <span class="hbadge2">HYBRID RECOMMENDED</span>
+      <div style="font-size:20px;font-weight:700;color:var(--t1);letter-spacing:-.5px;font-family:'Space Grotesk',sans-serif;margin-bottom:3px;">${r.hybrid.title}</div>
+      <div style="font-size:12px;color:var(--t3);font-family:'Space Grotesk',sans-serif;margin-bottom:16px;letter-spacing:.5px;">${r.hybrid.en}</div>
+      <div class="mrow" style="margin-bottom:14px;">
+        <div class="mi" style="border-color:rgba(15,98,254,.3);min-width:140px;"><div class="mv" style="font-size:14px;color:#60A5FA;">${r.hybrid.ttm}</div><div class="mk">Total Timeline</div></div>
+        <div class="mi" style="border-color:rgba(15,98,254,.3);min-width:140px;"><div class="mv" style="font-size:14px;color:#60A5FA;">${r.hybrid.risk}</div><div class="mk">Risk Profile</div></div>
+      </div>
+      <div class="phase-box"><div class="phase-label">Phase 1</div><div style="font-size:13px;color:var(--t2);line-height:1.65;">${r.hybrid.p1}</div></div>
+      <div class="phase-box"><div class="phase-label">Phase 2</div><div style="font-size:13px;color:var(--t2);line-height:1.65;">${r.hybrid.p2}</div></div>
+      <div class="why-box"><span class="why-label">なぜ双軌制が有効か · Strategic Rationale</span><div style="font-size:12px;color:var(--t2);line-height:1.65;">${r.hybrid.why}</div></div>
+    </div>`;
+  }else{hybEl.innerHTML="";}
+
+  // Score bars
+  document.getElementById("score-bars").innerHTML=[
+    {label:"API Enablement (OpenLegacy)",val:Math.round(r.norm.api*100),color:"#FFCD00"},
+    {label:"Refactor",val:Math.round(r.norm.refactor*100),color:"#60A5FA"},
+    {label:"Rebuild",val:Math.round(r.norm.rebuild*100),color:"#F87171"},
+  ].map(b=>`<div class="bar-row"><div class="bar-lr"><span style="color:var(--t2);">${b.label}</span><span style="color:var(--t3);font-family:'Space Grotesk',sans-serif;">${b.val}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${b.val}%;background:${b.color};"></div></div></div>`).join("");
+
+  document.getElementById("risk-bars").innerHTML=meta.risks.map(b=>`<div class="bar-row"><div class="bar-lr"><span style="color:var(--t2);">${b.label}</span><span style="color:var(--t3);font-family:'Space Grotesk',sans-serif;">${b.val}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${b.val}%;background:${b.color};"></div></div></div>`).join("");
+
+  // Radar chart
+  const radarData=[
+    {axis:"Cost Efficiency",api:85,refactor:75,rebuild:40},
+    {axis:"Speed to Market",api:90,refactor:65,rebuild:55},
+    {axis:"Risk Control",api:r.primary==="api"?88:50,refactor:70,rebuild:35},
+    {axis:"Business Agility",api:85,refactor:60,rebuild:80},
+    {axis:"Tech Debt Reduction",api:70,refactor:75,rebuild:95},
+  ];
+  if(radarChartInst){radarChartInst.destroy();}
+  radarChartInst=new Chart(document.getElementById("radarChart"),{
+    type:"radar",
+    data:{
+      labels:radarData.map(d=>d.axis),
+      datasets:[
+        {label:"API Enablement",data:radarData.map(d=>d.api),borderColor:"#FFCD00",backgroundColor:"rgba(255,205,0,.15)",borderWidth:2,pointBackgroundColor:"#FFCD00",pointRadius:3},
+        {label:"Refactor",data:radarData.map(d=>d.refactor),borderColor:"#60A5FA",backgroundColor:"rgba(96,165,250,.1)",borderWidth:1.5,pointBackgroundColor:"#60A5FA",pointRadius:3},
+        {label:"Rebuild",data:radarData.map(d=>d.rebuild),borderColor:"#F87171",backgroundColor:"rgba(248,113,113,.1)",borderWidth:1.5,pointBackgroundColor:"#F87171",pointRadius:3},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,grid:{color:"#1A2A3A"},angleLines:{color:"#1A2A3A"},pointLabels:{color:"#6B6B6B",font:{size:10,family:"Space Grotesk"}},ticks:{display:false}}},plugins:{legend:{display:false},tooltip:{backgroundColor:"#060D18",borderColor:"#1A2A3A",borderWidth:1,titleColor:"#9A9A9A",bodyColor:"#F0F0F0",titleFont:{family:"Space Grotesk",size:10},bodyFont:{family:"Space Grotesk",size:11}}}}
+  });
+
+  document.getElementById("radar-legend").innerHTML=[{c:"#FFCD00",n:"API Enablement"},{c:"#60A5FA",n:"Refactor"},{c:"#F87171",n:"Rebuild"}].map(l=>`<div class="legend-item" style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:2px;background:${l.c};border-radius:1px;"></div><span style="font-size:10px;color:var(--t3);font-family:'Space Grotesk',sans-serif;">${l.n}</span></div>`).join("");
+
+  // Advisory note
+  document.getElementById("advisory-note").innerHTML=`<strong style="color:var(--g);font-size:11px;letter-spacing:1px;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;">${r.cfg.labelJp} · Advisory Note</strong><div style="margin-top:7px;">${r.cfg.noteEn}</div><div style="font-family:'Noto Sans JP',sans-serif;font-size:12px;color:var(--t3);margin-top:4px;">${r.cfg.noteJp}</div>`;
+
+  // Warnings
+  let warn="";
+  if(r.norm.rebuild>0.35)warn+=`<div class="wbox"><span>(!)</span><span><strong>Rebuild Risk Flag:</strong> スコアに基づき「フルリビルド」の可能性が排除できません。しかしOpenLegacy Phased Co-Existenceアプローチにより、リビルドが不要になるケースが大多数です。Workshop前にHub Planner依存関係マッピングの実施を強く推奨します。</span></div>`;
+  if(r.mf.sup==="limited")warn+=`<div class="wbox" style="border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.04);color:#FCA5A5;"><span>(!)</span><span><strong>Platform Alert · ${r.mf.label}:</strong> コネクタ対応が限定的です。タイムライン・予算確定前に2〜4週間のフィジビリティPOCが必須です。</span></div>`;
+  document.getElementById("warnings").innerHTML=warn;
+
+  // Debt chart
+  if(debtChartInst){debtChartInst.destroy();}
+  debtChartInst=new Chart(document.getElementById("debtChart"),{
+    type:"line",
+    data:{
+      labels:r.debtData.map(d=>d.year),
+      datasets:[
+        {label:"維持現状 (Inaction)",data:r.debtData.map(d=>d.inaction),borderColor:"#F87171",backgroundColor:"transparent",borderWidth:2,borderDash:[6,3],pointBackgroundColor:"#F87171",pointRadius:3,tension:.3},
+        {label:"API Enablement",data:r.debtData.map(d=>d.api),borderColor:"#FFCD00",backgroundColor:"rgba(255,205,0,.05)",borderWidth:2.5,pointBackgroundColor:"#FFCD00",pointRadius:3,tension:.3},
+        {label:"Refactor",data:r.debtData.map(d=>d.refactor),borderColor:"#60A5FA",backgroundColor:"transparent",borderWidth:2,pointBackgroundColor:"#60A5FA",pointRadius:3,tension:.3},
+        {label:"Rebuild",data:r.debtData.map(d=>d.rebuild),borderColor:"#A78BFA",backgroundColor:"transparent",borderWidth:2,pointBackgroundColor:"#A78BFA",pointRadius:3,tension:.3},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:"#1A2A3A"},ticks:{color:"#6B6B6B",font:{size:11,family:"Space Grotesk"}}},y:{min:0,max:250,grid:{color:"#1A2A3A"},ticks:{color:"#6B6B6B",font:{size:11,family:"Space Grotesk"}}}},plugins:{legend:{labels:{color:"#6B6B6B",font:{size:11,family:"Space Grotesk"},boxWidth:20,boxHeight:2,padding:16}},tooltip:{backgroundColor:"#060D18",borderColor:"#1A2A3A",borderWidth:1,titleColor:"#6B6B6B",bodyColor:"#F0F0F0",titleFont:{family:"Space Grotesk",size:10},bodyFont:{family:"Space Grotesk",size:11}}}}
+  });
+
+  document.getElementById("debt-cards").innerHTML=[
+    {color:"#F87171",label:"維持現状",desc:"複雑度・カスタマイズ度に応じて技術債が複利で増加。人材退職と重なると加速。"},
+    {color:"#FFCD00",label:"API Enablement",desc:"レガシーは残るため技術債はほぼ横ばい。二重保守コストが微増。Quick Winとのトレードオフ。"},
+    {color:"#60A5FA",label:"Refactor",desc:"初期2年は工数増で一時的に負荷上昇。その後は技術債が継続的に削減。"},
+    {color:"#A78BFA",label:"Rebuild",desc:"Year 1-2は並行稼働リスクで一時急上昇。成功すれば5-6年目に技術債はほぼゼロ。"},
+  ].map(d=>`<div class="debt-card"><div class="debt-card-hdr"><div class="debt-line" style="background:${d.color};"></div><span class="debt-name" style="color:${d.color};">${d.label}</span></div><div style="font-size:11px;color:var(--t3);line-height:1.6;">${d.desc}</div></div>`).join("");
+
+  const cfoTexts={api:"API Enablementは今すぐ業務価値を解放しながら、技術債の急増を防ぐ最もリスクの低い第一手です。",refactor:"Refactorは初期2年の投資を経て、中長期的に保守コストと開発遅延を継続的に削減します。",rebuild:"Rebuildは短期的には最大の投資を要しますが、5〜6年後に技術債をほぼゼロにする唯一の選択肢です。"};
+  document.getElementById("cfo-text").textContent="「技術債は放置すると複利で増加します。"+cfoTexts[r.primary]+"このグラフは、今の意思決定が5年後のIT競争力に直結することを示しています。」";
+
+  // POC
+  document.getElementById("poc-industry-label").textContent=r.cfg.labelJp;
+  document.getElementById("poc-path-label").textContent=REC[r.primary].title;
+  const pocRows=POC[r.industry][r.primary];
+  document.getElementById("poc-table").innerHTML=`<div class="poc-table">
+    <div class="poc-hdr"><div>Phase</div><div>アクティビティ · Activities</div><div>成果物 · Deliverables</div></div>
+    ${pocRows.map((row,i)=>`<div class="poc-row" style="${i===2?"border-bottom:none":""}">
+      <div class="poc-cell"><div class="poc-mo">${row.phase}</div><div style="font-size:11px;color:var(--t3);margin-top:4px;font-family:'Space Grotesk',sans-serif;line-height:1.4;">${row.title}</div><div style="font-size:10px;color:#444;margin-top:2px;font-family:'Noto Sans JP',sans-serif;">${row.titleJp}</div></div>
+      <div class="poc-cell"><ul class="poc-ul">${row.items.map(it=>`<li>${it}</li>`).join("")}</ul></div>
+      <div class="poc-cell" style="border-right:none;"><div class="poc-del">${row.del}</div></div>
+    </div>`).join("")}
+  </div>`;
+
+  const goals={api:"Go/No-Go判定 + 移行ロードマップ確定",refactor:"速度改善実績 + 全体ロードマップ確定",rebuild:"TCO再試算 + 経営承認取得"};
+  document.getElementById("poc-info").innerHTML=`
+    <div class="poc-info-card"><div class="poc-info-key">POC期間の目安</div><div class="poc-info-val">3ヶ月</div></div>
+    <div class="poc-info-card"><div class="poc-info-key">Month 3 ゴール</div><div class="poc-info-val">${goals[r.primary]}</div></div>`;
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+onIndustryChange();
+buildMfGrid();
+buildToggles();
+buildRow3();
+</script>
+</body>
+</html>
